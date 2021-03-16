@@ -7,55 +7,52 @@ import './App.css';
 function App() {
   const [minutes, setMinutes] = useState(25);
   const [seconds, setSeconds] = useState(0);
+  const [timer, setTimer] = useState(25*60);
   const [isActive, setIsActive] = useState(false);
   const countRef = useRef(null);
-  const ms = minutes * 60000;
-  var countdown;
 
   useEffect(() => {
-    console.log(minutes+seconds)
-    if(minutes+seconds <= 0) {
+    if (timer == 0) {
       clearInterval(countRef.current)
       setIsActive(false);
     }
-  })
+  }, [timer, minutes])
 
-  const increment = () => setMinutes(minutes + 1);
-  const decrement = () => setMinutes(minutes - 1);
-
-  const calculateTimeLeft = () => {
-    let now = new Date().getTime();
-    let milisec = countdown - now;
-    let timeLeft = {
-      min: Math.floor((milisec % (1000 * 60 * 60)) / (1000 * 60)),
-      sec: Math.floor((milisec % (1000 * 60)) / 1000)
-    }
-    return timeLeft;
-  }
+  const increment = () => setTimer(timer + 60);
+  const decrement = () => setTimer(timer - 60);
 
   const startTimer = () => {
-    console.log(minutes, seconds)
-    if (minutes + seconds > 0) {
+    if (isActive) {
+      clearInterval(countRef.current);
+      setIsActive(false)
+    }
+    else if (minutes + seconds > 0) {
       setIsActive(true)
-      countdown = new Date(new Date().getTime() + ms);
       // refs exist outside render cycle
       countRef.current = setInterval(() => {
-        let { min, sec } = calculateTimeLeft();
-        // stale closure if callback function was not used
-        setMinutes(() => min);
-        setSeconds(() => sec);
+        setTimer((timer) => timer - 1) // stale closure if callback function was not used
       }, 1000)
-      } else {
-        clearInterval(countRef.current);
-        setIsActive(false)
-      }
+    }
+  }
+  
+  const formatTime = () => {
+    let min = Math.floor(timer / 60);
+    let sec = timer % 60;
+    return { min, sec }
   }
 
+  let { min, sec } = formatTime();
+
+  const stopTimer = () => {
+    clearInterval(countRef.current);
+    setIsActive(false);
+  }
+ 
   return (
     <div>
-      <p>{minutes} : {seconds}</p>
-      <SetDuration increment={increment} decrement={decrement}/>
-      <Play playme={startTimer} isActive={isActive}/>
+      <p>{min} : {sec}</p>
+      <SetDuration increment={increment} decrement={decrement}/> 
+      <Play playme={startTimer} isActive={isActive} />
     </div>
   );
 }

@@ -1,10 +1,10 @@
-import { render } from '@testing-library/react';
 
-const Play = ({ playme, isActive }) => {
+const Play = ({ playme, isActive, stopme }) => {
 
     return(
-      <div> 
-        <button onClick = {playme}>{isActive ? "Pause" : "Start"}</button>
+      <div>
+
+      <button onClick = {playme}>{isActive ? "Pause" : "Play"}</button>
       </div>
     )
 
