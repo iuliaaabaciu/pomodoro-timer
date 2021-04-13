@@ -1,10 +1,8 @@
-
-const Play = ({ playme, isActive, stopme }) => {
+const Play = ({ playme, isActive }) => {
 
     return(
       <div>
-
-      <button onClick = {playme}>{isActive ? "Pause" : "Play"}</button>
+       <button onClick = {playme}>{isActive ? "Pause" : "Play"}</button>
       </div>
     )
 
