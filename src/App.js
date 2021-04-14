@@ -12,6 +12,7 @@ function App() {
   const [seconds] = useState(0);
   const [timer, setTimer] = useState(25*60);
   const [isActive, setIsActive] = useState(false);
+  const [pause, setPause] = useState(5*60);
   const countRef = useRef(null);
 
   // if timer < 0, timer stops. useEffcet tracks timer changes
@@ -20,6 +21,7 @@ function App() {
       audio.play();
       clearInterval(countRef.current)
       setIsActive(false);
+      startPauseCountdown();
     }
   }, [timer, minutes])
 
@@ -54,6 +56,15 @@ function App() {
       }, 1000)
     } 
   }
+
+  const startPauseCountdown = () => {
+      setTimer(5*60);
+      setIsActive(true)
+      countRef.current = setInterval(() => {
+        setTimer((timer) => timer - 1) // stale closure if callback function was not used
+      }, 1000)      
+
+  }
   
   const formatTime = () => {
     let min = Math.floor(timer / 60);
@@ -77,7 +88,7 @@ function App() {
       <SetDuration increment={increment} decrement={decrement}/> 
       <Play playme={startTimer} isActive={isActive} />
       <Reset reset={reset} />
-      <button onClick={() => audio.play()}>Sound</button>
+      <button onClick={() => startPauseCountdown()}>Sound</button>
     </div>
   );
 }
