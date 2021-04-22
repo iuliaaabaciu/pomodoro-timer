@@ -13,18 +13,28 @@ function App() {
   const [work, setWork] = useState(25*60);
   const [isWorkActive, setIsWorkActive] = useState(false);
   const [isPauseActive, setIsPauseActive] = useState(false);
-  const [pause, setPause] = useState(5*60);
+  const [pause, setPause] = useState(1*10);
   const countRef = useRef(null);
 
   // if timer < 0, timer stops. useEffcet tracks timer changes
   useEffect(() => {
-      if (work == 0) {
+      if (timer === 0 && isWorkActive === true) {
         audio.play();
         clearInterval(countRef.current)
         setIsWorkActive(false);
+        setIsPauseActive(true);
+        setWork(work)
         startPauseCountdown();
       }
-  }, [work])
+      if (timer === 0 && isPauseActive === true) {
+        audio.play();
+        clearInterval(countRef.current);
+        setIsPauseActive(false);
+        setIsWorkActive(true);
+        setPause(pause);
+        startTimer();
+      }
+  }, [timer])
 
   // max increment value is 4h and 1 min
   const increment = () => {
@@ -65,36 +75,41 @@ function App() {
       clearInterval(countRef.current);
       setIsWorkActive(false);
     }
-    else if (minutes + seconds > 0) {
+    else if (timer > 0) {
       setIsWorkActive(true);
+      setTimer(work)
       // refs exist outside render cycle
       countRef.current = setInterval(() => {
-        setWork((work) => work - 1) // stale closure if callback function was not used
+        setTimer((work) => work - 1) // stale closure if callback function was not used
       }, 1000)
     }
   }
-
+console.log(work)
   const startPauseCountdown = () => {
       setTimer(pause);
       if (isPauseActive) {
         clearInterval(countRef.current);
         setIsPauseActive(false);        
-      } else if (pause > 0)
+      } else if (timer > 0)
         setIsPauseActive(true);
         countRef.current = setInterval(() => {
-          setTimer((timer) => timer - 1) // stale closure if callback function was not used
+          setTimer((pause) => pause - 1) // stale closure if callback function was not used
       }, 1000)
   }
   
   const formatTime = () => {
     let min = Math.floor(work / 60);
     let sec = work % 60;
+    let workMin = Math.floor(work / 60);;
     let pauseMin = Math.floor(pause / 60);
-    let workMin = Math.floor(work / 60);
-    return { min, sec, pauseMin, workMin }
+    let pauseSec = pause % 60;
+
+    let timerMin = Math.floor(timer /60);
+    let timerSec = timer % 60;
+    return { min, sec, pauseMin, pauseSec, timerMin, timerSec }
   }
 
-  let { min, sec, pauseMin, workMin } = formatTime();
+  let { min, sec, pauseMin, pauseSec, workMin, timerMin, timerSec } = formatTime();
 
   const reset = () => {
     if (isWorkActive) {
@@ -105,12 +120,15 @@ function App() {
   }
   
   return (
-    <div className="center">
-      <p>{min} : {sec}</p>
+    <div className="center flex">
+    <div><p className="duration">Timer: {timerMin} : {timerSec}</p></div>
+    <br></br>
+    <div><p className="duration">Work: {min} : {sec}</p></div>
+    <div><p className="duration">Pause: {pauseMin} : {pauseSec}</p></div>
       <SetDuration increment={increment} decrement={decrement} workMin={workMin} incrementPause={incrementPause} decrementPause={decrementPause} pauseMin={pauseMin}/>
-      <Play playme={startTimer} isWorkActive={isWorkActive} />
-      <Reset reset={reset} />
-      <button onClick={() => startPauseCountdown()}>Sound</button>
+      <Play playme={startTimer} isWorkActive={isWorkActive} /> 
+      {/* <Reset reset={reset} />
+      <button onClick={() => startPauseCountdown()}>Sound</button> */} 
     </div>
   );
 }

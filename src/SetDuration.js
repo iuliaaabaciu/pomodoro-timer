@@ -3,11 +3,11 @@ import './App.css';
 
 const SetDuration = ({ increment, decrement, workMin, incrementPause, decrementPause, pauseMin }) => {
     return(
-      <div className="duration">
+      <div className="item">
         <button onClick = {increment}>+</button>
         {workMin}
         <button onClick = {decrement}>-</button>
-        <br></br>
+        <p></p>
         <button onClick = {incrementPause}>+</button>
         {pauseMin}
         <button onClick = {decrementPause}>-</button>

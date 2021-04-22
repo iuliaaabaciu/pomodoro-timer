@@ -18,3 +18,15 @@ html, body {
   padding: 10px;
 }
 
+.flex {
+  display: flex;
+  flex-flow: column wrap;
+}
+
+.duration {
+  justify-content: center;
+}
+
+/* .item {
+  flex-grow: 2; 
+} */
