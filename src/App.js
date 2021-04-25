@@ -9,45 +9,52 @@ const audio = new Audio('https://ccrma.stanford.edu/~jos/mp3/JazzTrio.mp3');
 function App() {
   const [minutes] = useState(25);
   const [seconds] = useState(0);
-  const [timer, setTimer] = useState(25*60);
   const [work, setWork] = useState(25*60);
+  const [pause, setPause] = useState(1*10);
+  const [timer, setTimer] = useState(25*60);
   const [isWorkActive, setIsWorkActive] = useState(false);
   const [isPauseActive, setIsPauseActive] = useState(false);
-  const [pause, setPause] = useState(1*10);
   const countRef = useRef(null);
 
-  // if timer < 0, timer stops. useEffcet tracks timer changes
+  // if timer < 0, timer stops. useEffect tracks timer changes
   useEffect(() => {
+    // when work time ends, start pause countdown
       if (timer === 0 && isWorkActive === true) {
         audio.play();
         clearInterval(countRef.current)
         setIsWorkActive(false);
         setIsPauseActive(true);
-        setWork(work)
+       // setWork(work);
         startPauseCountdown();
       }
+      // when pause time ends, start work countdown
       if (timer === 0 && isPauseActive === true) {
         audio.play();
         clearInterval(countRef.current);
         setIsPauseActive(false);
         setIsWorkActive(true);
-        setPause(pause);
+        setTimer(work);
         startTimer();
       }
   }, [timer])
 
   // max increment value is 4h and 1 min
   const increment = () => {
+   // setTimer(work);
     if (work <= 14400) {
-      setWork(work + 60)
+      setWork(work + 60);
+      setTimer(timer + 60);
     } else {
       console.error('Unexpected error in increment');
     }
+    console.log('w', work);
+    console.log('t', timer)
   };
   
   const decrement = () => {
     if (work > 0) {
       setWork(work - 60);
+      setTimer(timer - 60);
     } else {
       console.error('Unexpected error in decrement');
     }
@@ -75,22 +82,21 @@ function App() {
       clearInterval(countRef.current);
       setIsWorkActive(false);
     }
-    else if (timer > 0) {
+    else if (work > 0) {
       setIsWorkActive(true);
-      setTimer(work)
       // refs exist outside render cycle
       countRef.current = setInterval(() => {
         setTimer((work) => work - 1) // stale closure if callback function was not used
       }, 1000)
     }
   }
-console.log(work)
+
   const startPauseCountdown = () => {
       setTimer(pause);
       if (isPauseActive) {
         clearInterval(countRef.current);
         setIsPauseActive(false);        
-      } else if (timer > 0)
+      } else if (pause > 0)
         setIsPauseActive(true);
         countRef.current = setInterval(() => {
           setTimer((pause) => pause - 1) // stale closure if callback function was not used
