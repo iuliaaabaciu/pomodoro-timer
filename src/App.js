@@ -47,19 +47,17 @@ function App() {
     } else {
       console.error('Unexpected error in increment');
     }
-    console.log('w', work);
-    console.log('t', timer)
   };
   
   const decrement = () => {
-    if (work > 0) {
+    if (work > 60) {
       setWork(work - 60);
       setTimer(timer - 60);
     } else {
       console.error('Unexpected error in decrement');
     }
   }
-
+console.log(work)
   const incrementPause = () => {
     if (pause <= 14400) {
       setPause(pause + 60)
@@ -69,7 +67,7 @@ function App() {
   };
   
   const decrementPause = () => {
-    if (pause > 0) {
+    if (pause > 60) {
       setPause(pause - 60);
     } else {
       console.error('Unexpected error in decrement');
@@ -106,7 +104,6 @@ function App() {
   const formatTime = () => {
     let min = Math.floor(work / 60);
     let sec = work % 60;
-    let workMin = Math.floor(work / 60);;
     let pauseMin = Math.floor(pause / 60);
     let pauseSec = pause % 60;
 
@@ -115,14 +112,17 @@ function App() {
     return { min, sec, pauseMin, pauseSec, timerMin, timerSec }
   }
 
-  let { min, sec, pauseMin, pauseSec, workMin, timerMin, timerSec } = formatTime();
+  let { min, sec, pauseMin, pauseSec, timerMin, timerSec } = formatTime();
 
   const reset = () => {
     if (isWorkActive) {
       clearInterval(countRef.current);
-      setIsWorkActive(false)
+      setIsWorkActive(false);
+      setTimer(25*60);
+      setWork(25*60);
+    } else if (!isWorkActive) {
+      setWork(25*60);
     }
-    setTimer(25*60)
   }
   
   return (
@@ -131,10 +131,9 @@ function App() {
     <br></br>
     <div><p className="duration">Work: {min} : {sec}</p></div>
     <div><p className="duration">Pause: {pauseMin} : {pauseSec}</p></div>
-      <SetDuration increment={increment} decrement={decrement} workMin={workMin} incrementPause={incrementPause} decrementPause={decrementPause} pauseMin={pauseMin}/>
+      <SetDuration increment={increment} decrement={decrement} incrementPause={incrementPause} decrementPause={decrementPause}/>
       <Play playme={startTimer} isWorkActive={isWorkActive} /> 
-      {/* <Reset reset={reset} />
-      <button onClick={() => startPauseCountdown()}>Sound</button> */} 
+      <Reset reset={reset} />
     </div>
   );
 }
