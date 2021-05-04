@@ -114,7 +114,7 @@ console.log(work)
 
   let { min, sec, pauseMin, pauseSec, timerMin, timerSec } = formatTime();
 
-  const reset = () => {
+  const resetWork = () => {
     if (isWorkActive) {
       clearInterval(countRef.current);
       setIsWorkActive(false);
@@ -124,6 +124,17 @@ console.log(work)
       setWork(25*60);
     }
   }
+
+  const resetPause = () => {
+    if (isPauseActive) {
+      clearInterval(countRef.current);
+      setIsPauseActive(false);
+      setTimer(25*60);
+      setPause(5*60);
+    } else if (!isPauseActive) {
+      setPause(5*60);
+    }
+  }  
   
   return (
     <div className="center flex">
@@ -131,9 +142,11 @@ console.log(work)
     <br></br>
     <div><p className="duration">Work: {min} : {sec}</p></div>
     <div><p className="duration">Pause: {pauseMin} : {pauseSec}</p></div>
+    <Reset resetPause={resetPause} />
       <SetDuration increment={increment} decrement={decrement} incrementPause={incrementPause} decrementPause={decrementPause}/>
       <Play playme={startTimer} isWorkActive={isWorkActive} /> 
-      <Reset reset={reset} />
+      <Reset resetWork={resetWork} />
+      <button onClick={resetWork}>RW</button>
     </div>
   );
 }

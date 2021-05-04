@@ -1,11 +1,10 @@
-const Reset = ({ reset }) => {
+const Reset = ({ resetWork, resetPause }) => {
 
-    return(
-      <div>
-       <button onClick = {reset}>Reset</button>
-      </div>
-    )
-
+  if (resetWork) {
+    return <button onClick={resetWork}>RW</button>
+  } else if (resetPause) {
+    return <button onClick = {resetPause}>Reset Pause</button>
+  }
 }
 
 export default Reset;
